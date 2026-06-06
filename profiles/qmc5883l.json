@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "bus": {
+    "port": 0,
+    "sda_pin": 21,
+    "scl_pin": 22,
+    "frequency_hz": 400000,
+    "internal_pullups": true
+  },
+  "devices": [
+    {
+      "id": "magnetometer",
+      "address": "0x0D",
+      "initialize": [
+        {"op": "write", "register": "0x0B", "register_bits": 8, "data": ["0x01"]},
+        {"op": "write", "register": "0x09", "register_bits": 8, "data": ["0x1D"]},
+        {"op": "delay", "milliseconds": 10}
+      ],
+      "measurement": {
+        "actions": [
+          {"op": "poll", "register": "0x06", "register_bits": 8, "mask": "0x01", "expected": "0x01", "timeout_ms": 100, "interval_ms": 5},
+          {"op": "read", "register": "0x00", "register_bits": 8, "length": 6, "destination": "sample"}
+        ]
+      },
+      "decoder": {
+        "type": "declarative",
+        "outputs": [
+          {"id": "magnetic_x", "type": "magnetic_field", "unit": "gauss", "source": "sample", "byte_offset": 0, "width": 2, "endianness": "little", "signed": true, "scale": 0.0003333333333333333},
+          {"id": "magnetic_y", "type": "magnetic_field", "unit": "gauss", "source": "sample", "byte_offset": 2, "width": 2, "endianness": "little", "signed": true, "scale": 0.0003333333333333333},
+          {"id": "magnetic_z", "type": "magnetic_field", "unit": "gauss", "source": "sample", "byte_offset": 4, "width": 2, "endianness": "little", "signed": true, "scale": 0.0003333333333333333}
+        ]
+      }
+    }
+  ]
+}

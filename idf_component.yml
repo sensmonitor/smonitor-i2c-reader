@@ -1,0 +1,6 @@
+version: "0.1.0"
+description: Configurable I2C sensor runtime for ESP-IDF using Espressif i2c_bus.
+url: https://github.com/smonitor/smonitor-i2c
+dependencies:
+  idf: ">=5.3"
+  espressif/i2c_bus: "^1.2.0"

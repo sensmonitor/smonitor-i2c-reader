@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "bus": {
+    "port": 0,
+    "sda_pin": 21,
+    "scl_pin": 22,
+    "frequency_hz": 400000,
+    "internal_pullups": true
+  },
+  "devices": [
+    {
+      "id": "power_monitor",
+      "address": "0x40",
+      "initialize": [
+        {"op": "write", "register": "0x00", "register_bits": 8, "data": ["0x39", "0x9F"]},
+        {"op": "delay", "milliseconds": 2}
+      ],
+      "measurement": {
+        "actions": [
+          {"op": "read", "register": "0x01", "register_bits": 8, "length": 2, "destination": "shunt"},
+          {"op": "read", "register": "0x02", "register_bits": 8, "length": 2, "destination": "bus"}
+        ]
+      },
+      "decoder": {
+        "type": "declarative",
+        "outputs": [
+          {"id": "shunt_voltage", "type": "voltage", "unit": "volt", "source": "shunt", "byte_offset": 0, "width": 2, "endianness": "big", "signed": true, "scale": 0.00001},
+          {"id": "bus_voltage", "type": "voltage", "unit": "volt", "source": "bus", "byte_offset": 0, "width": 2, "endianness": "big", "right_shift": 3, "mask": "0x1FFF", "scale": 0.004}
+        ]
+      }
+    }
+  ]
+}

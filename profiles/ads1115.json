@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "bus": {
+    "port": 0,
+    "sda_pin": 21,
+    "scl_pin": 22,
+    "frequency_hz": 400000,
+    "internal_pullups": true
+  },
+  "devices": [
+    {
+      "id": "adc",
+      "address": "0x48",
+      "measurement": {
+        "actions": [
+          {
+            "op": "write",
+            "register": "0x01",
+            "register_bits": 8,
+            "data": ["0xC3", "0x83"]
+          },
+          {"op": "delay", "milliseconds": 9},
+          {
+            "op": "read",
+            "register": "0x00",
+            "register_bits": 8,
+            "length": 2,
+            "destination": "conversion"
+          }
+        ]
+      },
+      "decoder": {
+        "type": "declarative",
+        "outputs": [
+          {
+            "id": "ain0",
+            "type": "voltage",
+            "unit": "volt",
+            "source": "conversion",
+            "byte_offset": 0,
+            "width": 2,
+            "endianness": "big",
+            "signed": true,
+            "scale": 0.000125
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "bus": {
+    "port": 0,
+    "sda_pin": 21,
+    "scl_pin": 22,
+    "frequency_hz": 400000,
+    "internal_pullups": true
+  },
+  "devices": [
+    {
+      "id": "imu",
+      "address": "0x68",
+      "initialize": [
+        {"op": "write", "register": "0x6B", "register_bits": 8, "data": ["0x00"]},
+        {"op": "write", "register": "0x1C", "register_bits": 8, "data": ["0x00"]},
+        {"op": "write", "register": "0x1B", "register_bits": 8, "data": ["0x00"]},
+        {"op": "delay", "milliseconds": 10}
+      ],
+      "measurement": {
+        "actions": [
+          {
+            "op": "read",
+            "register": "0x3B",
+            "register_bits": 8,
+            "length": 14,
+            "destination": "sample"
+          }
+        ]
+      },
+      "decoder": {
+        "type": "declarative",
+        "outputs": [
+          {"id": "accel_x", "type": "acceleration", "unit": "g", "source": "sample", "byte_offset": 0, "width": 2, "endianness": "big", "signed": true, "scale": 0.00006103515625},
+          {"id": "accel_y", "type": "acceleration", "unit": "g", "source": "sample", "byte_offset": 2, "width": 2, "endianness": "big", "signed": true, "scale": 0.00006103515625},
+          {"id": "accel_z", "type": "acceleration", "unit": "g", "source": "sample", "byte_offset": 4, "width": 2, "endianness": "big", "signed": true, "scale": 0.00006103515625},
+          {"id": "temperature", "type": "temperature", "unit": "celsius", "source": "sample", "byte_offset": 6, "width": 2, "endianness": "big", "signed": true, "scale": 0.0029411764705882353, "offset": 36.53},
+          {"id": "gyro_x", "type": "angular_velocity", "unit": "degree_per_second", "source": "sample", "byte_offset": 8, "width": 2, "endianness": "big", "signed": true, "scale": 0.007633587786259542},
+          {"id": "gyro_y", "type": "angular_velocity", "unit": "degree_per_second", "source": "sample", "byte_offset": 10, "width": 2, "endianness": "big", "signed": true, "scale": 0.007633587786259542},
+          {"id": "gyro_z", "type": "angular_velocity", "unit": "degree_per_second", "source": "sample", "byte_offset": 12, "width": 2, "endianness": "big", "signed": true, "scale": 0.007633587786259542}
+        ]
+      }
+    }
+  ]
+}

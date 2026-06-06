@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://smonitor.example/schemas/smonitor-i2c.schema.json",
+  "title": "smonitor-i2c runtime configuration",
+  "type": "object",
+  "required": ["schema_version", "bus", "devices"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "bus": {
+      "$ref": "#/$defs/bus"
+    },
+    "devices": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/device"
+      }
+    }
+  },
+  "$defs": {
+    "numberOrHex": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "pattern": "^0[xX][0-9a-fA-F]+$"
+        }
+      ]
+    },
+    "bus": {
+      "type": "object",
+      "required": ["port", "sda_pin", "scl_pin", "frequency_hz"],
+      "properties": {
+        "port": {"type": "integer", "minimum": 0},
+        "sda_pin": {"type": "integer", "minimum": 0},
+        "scl_pin": {"type": "integer", "minimum": 0},
+        "frequency_hz": {"type": "integer", "minimum": 1},
+        "internal_pullups": {"type": "boolean"}
+      }
+    },
+    "device": {
+      "type": "object",
+      "required": ["id", "address", "decoder"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 31},
+        "address": {"$ref": "#/$defs/numberOrHex"},
+        "frequency_hz": {"type": "integer", "minimum": 0},
+        "initialize": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/action"}
+        },
+        "measurement": {
+          "type": "object",
+          "required": ["actions"],
+          "properties": {
+            "actions": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/action"}
+            }
+          }
+        },
+        "decoder": {
+          "oneOf": [
+            {"$ref": "#/$defs/declarativeDecoder"},
+            {"$ref": "#/$defs/nativeDecoder"}
+          ]
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["op"],
+      "properties": {
+        "op": {
+          "enum": ["write", "read", "delay", "poll", "crc8"]
+        },
+        "register": {"$ref": "#/$defs/numberOrHex"},
+        "register_bits": {"enum": [0, 8, 16]},
+        "data": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/numberOrHex"}
+        },
+        "length": {"type": "integer", "minimum": 1, "maximum": 64},
+        "destination": {"type": "string", "minLength": 1},
+        "milliseconds": {"type": "integer", "minimum": 1},
+        "timeout_ms": {"type": "integer", "minimum": 1},
+        "interval_ms": {"type": "integer", "minimum": 1},
+        "mask": {"$ref": "#/$defs/numberOrHex"},
+        "expected": {"$ref": "#/$defs/numberOrHex"},
+        "offset": {"type": "integer", "minimum": 0},
+        "data_length": {"type": "integer", "minimum": 1},
+        "crc_offset": {"type": "integer", "minimum": 0},
+        "polynomial": {"$ref": "#/$defs/numberOrHex"},
+        "initial": {"$ref": "#/$defs/numberOrHex"}
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["id", "type", "source"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 31},
+        "type": {"type": "string", "minLength": 1, "maxLength": 23},
+        "unit": {"type": "string", "maxLength": 15},
+        "source": {"type": "string", "minLength": 1},
+        "byte_offset": {"type": "integer", "minimum": 0},
+        "width": {"type": "integer", "minimum": 1, "maximum": 4},
+        "endianness": {"enum": ["big", "little"]},
+        "signed": {"type": "boolean"},
+        "right_shift": {"type": "integer", "minimum": 0, "maximum": 31},
+        "mask": {"$ref": "#/$defs/numberOrHex"},
+        "scale": {"type": "number"},
+        "offset": {"type": "number"},
+        "clamp_min": {"type": "number"},
+        "clamp_max": {"type": "number"},
+        "invalid_raw": {"$ref": "#/$defs/numberOrHex"}
+      }
+    },
+    "nativeOutput": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 31},
+        "type": {"type": "string", "minLength": 1, "maxLength": 23},
+        "unit": {"type": "string", "maxLength": 15},
+        "scale": {"type": "number"},
+        "offset": {"type": "number"}
+      }
+    },
+    "declarativeDecoder": {
+      "type": "object",
+      "required": ["type", "outputs"],
+      "properties": {
+        "type": {"const": "declarative"},
+        "outputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/output"}
+        }
+      }
+    },
+    "nativeDecoder": {
+      "type": "object",
+      "required": ["type", "name", "outputs"],
+      "properties": {
+        "type": {"const": "native"},
+        "name": {"type": "string", "minLength": 1},
+        "implementation": {"type": "string"},
+        "outputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/nativeOutput"}
+        }
+      }
+    }
+  }
+}

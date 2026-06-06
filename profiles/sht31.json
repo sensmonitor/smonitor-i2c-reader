@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "bus": {
+    "port": 0,
+    "sda_pin": 21,
+    "scl_pin": 22,
+    "frequency_hz": 400000,
+    "internal_pullups": true
+  },
+  "devices": [
+    {
+      "id": "climate",
+      "address": "0x44",
+      "measurement": {
+        "actions": [
+          {"op": "write", "data": ["0x2C", "0x06"]},
+          {"op": "delay", "milliseconds": 15},
+          {"op": "read", "length": 6, "destination": "sample"},
+          {"op": "crc8", "destination": "sample", "offset": 0, "data_length": 2, "crc_offset": 2, "polynomial": "0x31", "initial": "0xFF"},
+          {"op": "crc8", "destination": "sample", "offset": 3, "data_length": 2, "crc_offset": 5, "polynomial": "0x31", "initial": "0xFF"}
+        ]
+      },
+      "decoder": {
+        "type": "declarative",
+        "outputs": [
+          {"id": "temperature", "type": "temperature", "unit": "celsius", "source": "sample", "byte_offset": 0, "width": 2, "endianness": "big", "scale": 0.0026703288319218737, "offset": -45.0},
+          {"id": "humidity", "type": "humidity", "unit": "percent_rh", "source": "sample", "byte_offset": 3, "width": 2, "endianness": "big", "scale": 0.0015259021896696422, "clamp_min": 0.0, "clamp_max": 100.0}
+        ]
+      }
+    }
+  ]
+}

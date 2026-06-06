@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "bus": {
+    "port": 0,
+    "sda_pin": 21,
+    "scl_pin": 22,
+    "frequency_hz": 400000,
+    "internal_pullups": true
+  },
+  "devices": [
+    {
+      "id": "distance",
+      "address": "0x29",
+      "decoder": {
+        "type": "native",
+        "name": "vl53l0x",
+        "implementation": "application_registered",
+        "outputs": [
+          {"id": "distance", "type": "distance", "unit": "millimeter"}
+        ]
+      }
+    }
+  ]
+}
