@@ -32,6 +32,30 @@ typedef struct {
 esp_err_t smonitor_i2c_create_from_json(const char *json,
                                         smonitor_i2c_handle_t *out_handle);
 
+typedef struct {
+    int port;
+    int sda_pin;
+    int scl_pin;
+    uint32_t frequency_hz;
+    bool internal_pullups;
+    uint8_t device_address;
+} smonitor_i2c_profile_config_t;
+
+/**
+ * Return the sensor name selected through the smonitor-i2c-reader Kconfig.
+ */
+const char *smonitor_i2c_selected_sensor_name(void);
+
+/**
+ * Create a runtime using the sensor profile selected through Kconfig.
+ *
+ * The sensor-specific device profile lives in smonitor-i2c-reader. The caller
+ * provides only the board/application-specific bus wiring and device address.
+ */
+esp_err_t smonitor_i2c_create_selected_profile(
+    const smonitor_i2c_profile_config_t *config,
+    smonitor_i2c_handle_t *out_handle);
+
 /**
  * Read every configured device once.
  *

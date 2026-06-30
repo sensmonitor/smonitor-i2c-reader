@@ -9,14 +9,74 @@ menu "SensMonitor I2C Reader"
             help
                 Bosch temperature, pressure and humidity sensor using the
                 built-in bosch_bme280 smonitor-i2c-reader driver.
+
+        config SMONITOR_I2C_SENSOR_BMP280
+            bool "BMP280"
+            help
+                Bosch temperature and pressure sensor using the built-in
+                bosch_bmp280 smonitor-i2c-reader driver.
+
+        config SMONITOR_I2C_SENSOR_SHT31
+            bool "SHT31"
+            help
+                Sensirion temperature and humidity sensor using the
+                declarative smonitor-i2c-reader profile.
+
+        config SMONITOR_I2C_SENSOR_AHT20
+            bool "AHT20"
+            help
+                Aosong temperature and humidity sensor using the declarative
+                smonitor-i2c-reader profile.
+
+        config SMONITOR_I2C_SENSOR_BH1750
+            bool "BH1750"
+            help
+                Ambient light sensor using the declarative smonitor-i2c-reader
+                profile.
+
+        config SMONITOR_I2C_SENSOR_ADS1115
+            bool "ADS1115"
+            help
+                16-bit ADC using the declarative smonitor-i2c-reader profile.
+
+        config SMONITOR_I2C_SENSOR_INA219
+            bool "INA219"
+            help
+                Voltage/current monitor using the declarative
+                smonitor-i2c-reader profile.
+
+        config SMONITOR_I2C_SENSOR_MPU6050
+            bool "MPU6050"
+            help
+                IMU sensor using the declarative smonitor-i2c-reader profile.
+
+        config SMONITOR_I2C_SENSOR_QMC5883L
+            bool "QMC5883L"
+            help
+                Magnetometer using the declarative smonitor-i2c-reader profile.
+
+        config SMONITOR_I2C_SENSOR_VL53L0X
+            bool "VL53L0X"
+            help
+                Time-of-flight distance sensor. Requires an application
+                registered native driver named vl53l0x.
     endchoice
 
     config SMONITOR_I2C_DEVICE_ADDRESS
         hex "Sensor I2C address"
         default 0x76 if SMONITOR_I2C_SENSOR_BME280
+        default 0x76 if SMONITOR_I2C_SENSOR_BMP280
+        default 0x44 if SMONITOR_I2C_SENSOR_SHT31
+        default 0x38 if SMONITOR_I2C_SENSOR_AHT20
+        default 0x23 if SMONITOR_I2C_SENSOR_BH1750
+        default 0x48 if SMONITOR_I2C_SENSOR_ADS1115
+        default 0x40 if SMONITOR_I2C_SENSOR_INA219
+        default 0x68 if SMONITOR_I2C_SENSOR_MPU6050
+        default 0x0D if SMONITOR_I2C_SENSOR_QMC5883L
+        default 0x29 if SMONITOR_I2C_SENSOR_VL53L0X
         range 0x08 0x77
         help
-            I2C address of the selected sensor module. BME280 modules commonly
-            use 0x76 or 0x77, depending on the module wiring.
+            I2C address of the selected sensor module. Some modules expose
+            alternate addresses depending on their wiring.
 
 endmenu
