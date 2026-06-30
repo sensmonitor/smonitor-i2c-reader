@@ -1,0 +1,22 @@
+menu "SensMonitor I2C Reader"
+
+    choice SMONITOR_I2C_SENSOR
+        prompt "Sensor model"
+        default SMONITOR_I2C_SENSOR_BME280
+
+        config SMONITOR_I2C_SENSOR_BME280
+            bool "BME280"
+            help
+                Bosch temperature, pressure and humidity sensor using the
+                built-in bosch_bme280 smonitor-i2c-reader driver.
+    endchoice
+
+    config SMONITOR_I2C_DEVICE_ADDRESS
+        hex "Sensor I2C address"
+        default 0x76 if SMONITOR_I2C_SENSOR_BME280
+        range 0x08 0x77
+        help
+            I2C address of the selected sensor module. BME280 modules commonly
+            use 0x76 or 0x77, depending on the module wiring.
+
+endmenu
